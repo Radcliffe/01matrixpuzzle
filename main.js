@@ -79,11 +79,11 @@ function render() {
 }
 
 // Check if matrix is the identity.
-function checkIfIdentity() {
+function checkIfIdentity(mat) {
     for (let i = 0; i < n; i++) {
         for (let j = 0; j < n; j++) {
-            if (i === j && matrix[i][j] !== 1) return false;
-            if (i !== j && matrix[i][j] !== 0) return false;
+            if (i === j && mat[i][j] !== 1) return false;
+            if (i !== j && mat[i][j] !== 0) return false;
         }
     }
     return true;
@@ -200,7 +200,7 @@ function performRowOperation() {
 
     // Check if the matrix is now the identity matrix.
     // Congratulate the user if they achieved it in 3*n moves or less.
-    if (checkIfIdentity()) {
+    if (checkIfIdentity(matrix)) {
         alert(`Congratulations! You transformed the matrix to the identity in ${history.length} moves.`);
     }
 }
