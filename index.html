@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>0-1 matrix puzzle</title>
     <link rel="stylesheet" href="styles.css">
+<!--    favicon-->
+    <link rel="icon" href="images/matrix.png" type="image/x-icon">
+    <meta name="description" content="A puzzle to transform a 0-1 matrix to the identity matrix using transvections.">
+    <meta name="keywords" content="matrix, puzzle, transvections, identity matrix, group theory">
+    <meta name="author" content="David Radcliffe">
 </head>
 <body>
 
@@ -23,10 +28,11 @@
 
 <div class="game-container">
     <div class="controls">
-        <label for="n-selector">Dimension (n):</label>
+        <label for="n-selector">n:</label>
         <input type="number" id="n-selector" value="4" min="2" max="8">
-        <button id="undo-button">Undo Last Operation</button>
+        <button id="undo-button">Undo</button>
         <button id="reset-button">Reset</button>
+        <button id="random-button">Random</button>
     </div>
 
     <div class="matrix-container">
@@ -52,6 +58,8 @@
 <p>It is <a href="https://arxiv.org/abs/2503.01467">conjectured</a> that the permutation matrix corresponding to an
     n-cycle requires no fewer than 3n &minus; 3 transvections. This has been verified up to n = 8.</p>
 
+<p><strong>Created by David Radcliffe.</strong>
+    This project is on <a href="https://github.com/Radcliffe/01matrixpuzzle">GitHub</a>.</p>
 <script src="main.js"></script>
 </body>
 </html>
