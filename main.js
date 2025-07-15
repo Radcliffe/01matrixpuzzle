@@ -228,11 +228,5 @@ resetButton.addEventListener('click', initialize);
 rowHeadersContainer.addEventListener('click', handleRowSelect);
 randomButton.addEventListener('click', handleRandom);
 
-// Load MathJax for LaTeX rendering
-const script = document.createElement('script');
-script.src = 'https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-script.async = true;
-document.head.appendChild(script);
-
 // Initial call
 initialize();
