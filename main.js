@@ -8,6 +8,7 @@ let selectedRows = []; // [fromRow, toRow]
 const nSelector = document.getElementById('n-selector');
 const undoButton = document.getElementById('undo-button');
 const resetButton = document.getElementById('reset-button');
+const randomButton = document.getElementById('random-button');
 const matrixGrid = document.getElementById('matrix');
 const rowHeadersContainer = document.getElementById('row-headers');
 const historyList = document.getElementById('history-list');
@@ -19,11 +20,11 @@ const goalElement = document.getElementById('goal');
 function initialize() {
     n = parseInt(nSelector.value, 10);
     matrix = Array(n).fill(0).map(() => Array(n).fill(0));
-    history = [];
-    selectedRows = [];
     for (let i = 0; i < n; i++) {
         matrix[i][(i + 1) % n] = 1;
     }
+    history = [];
+    selectedRows = [];
     render();
 }
 
@@ -88,6 +89,57 @@ function checkIfIdentity() {
     return true;
 }
 
+function checkIfInvertible(mat) {
+    // Make a copy of the matrix to perform Gaussian elimination
+    const copy = mat.map(row => row.slice());
+    for (let i = 0; i < n; i++) {
+        // Find a row with a leading 1 in column i
+        let pivotRow = -1;
+        for (let j = i; j < n; j++) {
+            if (copy[j][i] === 1) {
+                pivotRow = j;
+                break;
+            }
+        }
+        if (pivotRow === -1) return false; // No leading 1 found, not invertible
+
+        // Swap the current row with the pivot row
+        if (pivotRow !== i) {
+            [copy[i], copy[pivotRow]] = [copy[pivotRow], copy[i]];
+        }
+
+        // Eliminate all other rows in column i
+        for (let j = 0; j < n; j++) {
+            if (j !== i && copy[j][i] === 1) {
+                for (let k = 0; k < n; k++) {
+                    copy[j][k] = (copy[j][k] + copy[i][k]) % 2;
+                }
+            }
+        }
+    }
+    // If we reach here, the matrix is in row echelon form and is invertible
+    return true;
+}
+
+function randomInvertibleMatrix(maxAttempts = 1000) {
+    // Generate a random invertible matrix over F_2
+    let mat = Array.from({length: n}, () => Array(n).fill(0));
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+                mat[i][j] = Math.random() < 0.5 ? 0 : 1;
+            }
+        }
+
+        // Ensure the matrix is invertible by performing Gaussian elimination
+        if (checkIfInvertible(mat) && !checkIfIdentity(mat)) {
+            return mat;
+        }
+    }
+    // Display matrix for debugging
+    throw new Error(`Failed to generate an invertible matrix after ${maxAttempts} attempts`);
+}
+
 // === EVENT HANDLERS ===
 
 /** Handles changing the matrix dimension n */
@@ -118,6 +170,19 @@ function handleRowSelect(event) {
             performRowOperation();
         }
     }
+    render();
+}
+
+function handleRandom() {
+    try {
+        matrix = randomInvertibleMatrix();
+    }
+    catch (error) {
+        initialize();
+        return;
+    }
+    history = [];
+    selectedRows = [];
     render();
 }
 
@@ -161,6 +226,7 @@ nSelector.addEventListener('change', handleNChange);
 undoButton.addEventListener('click', handleUndo);
 resetButton.addEventListener('click', initialize);
 rowHeadersContainer.addEventListener('click', handleRowSelect);
+randomButton.addEventListener('click', handleRandom);
 
 // Load MathJax for LaTeX rendering
 const script = document.createElement('script');
