@@ -3,6 +3,7 @@ let n = 4;
 let matrix = [];
 let history = []; // [{ from: r1, to: r2 }, ...]
 let selectedRows = []; // [fromRow, toRow]
+let gameOver = false;
 
 // === DOM ELEMENTS ===
 const nSelector = document.getElementById('n-selector');
@@ -26,6 +27,7 @@ function initialize() {
     history = [];
     selectedRows = [];
     render();
+    gameOver = false;
 }
 
 /** Renders the entire UI based on the current state */
@@ -38,8 +40,8 @@ function render() {
             const cell = document.createElement('div');
             cell.className = 'matrix-cell';
             cell.textContent = val;
-            cell.dataset.i = i;
-            cell.dataset.j = j;
+            cell.dataset.i = i.toString();
+            cell.dataset.j = j.toString();
             if (val === 1) {
                 cell.style.backgroundColor = '#64b5f6'; // Blue for 1
             } else {
@@ -55,7 +57,7 @@ function render() {
         const header = document.createElement('div');
         header.className = 'row-header';
         header.textContent = `R${i + 1}`;
-        header.dataset.i = i;
+        header.dataset.i = i.toString();
         if (selectedRows.length === 1 && selectedRows[0] === i) {
             header.classList.add('selected-from');
         }
@@ -136,7 +138,6 @@ function randomInvertibleMatrix(maxAttempts = 1000) {
             return mat;
         }
     }
-    // Display matrix for debugging
     throw new Error(`Failed to generate an invertible matrix after ${maxAttempts} attempts`);
 }
 
@@ -154,6 +155,7 @@ function handleNChange() {
 
 /** Handles selecting a row for an operation */
 function handleRowSelect(event) {
+    if (gameOver) return; // Ignore clicks if the game is over
     if (!event.target.classList.contains('row-header')) return;
     const rowIndex = parseInt(event.target.dataset.i, 10);
 
@@ -184,6 +186,7 @@ function handleRandom() {
     history = [];
     selectedRows = [];
     render();
+    gameOver = false;
 }
 
 /** Performs the row operation and updates history */
@@ -202,6 +205,7 @@ function performRowOperation() {
     // Congratulate the user if they achieved it in 3*n moves or less.
     if (checkIfIdentity(matrix)) {
         alert(`Congratulations! You transformed the matrix to the identity in ${history.length} moves.`);
+        gameOver = true;
     }
 }
 
@@ -218,13 +222,23 @@ function handleUndo() {
         matrix[to][j] = (matrix[to][j] + matrix[from][j]) % 2;
     }
     render();
+    gameOver = false;
 }
 
+
+function handleUndoAll() {
+    while (history.length > 0) {
+        handleUndo();
+    }
+    selectedRows = [];
+    gameOver = false;
+    render();
+}
 
 // === INITIALIZATION ===
 nSelector.addEventListener('change', handleNChange);
 undoButton.addEventListener('click', handleUndo);
-resetButton.addEventListener('click', initialize);
+resetButton.addEventListener('click', handleUndoAll);
 rowHeadersContainer.addEventListener('click', handleRowSelect);
 randomButton.addEventListener('click', handleRandom);
 
