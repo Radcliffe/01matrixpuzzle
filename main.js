@@ -133,7 +133,9 @@ function randomInvertibleMatrix(maxAttempts = 1000) {
             }
         }
 
-        // Ensure the matrix is invertible by performing Gaussian elimination
+        // Ensure the matrix is invertible by performing Gaussian elimination.
+        // The probability of generating an invertible matrix is
+        // (1 - 1/2) * (1 - 1/4) * ... * (1 - 1/(2^n)) for n x n matrices.
         if (checkIfInvertible(mat) && !checkIfIdentity(mat)) {
             return mat;
         }
